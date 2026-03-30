@@ -38,6 +38,9 @@ class Chip8 {
         void OP_7xkk(); // Set Vx = Vx + kk.
         void OP_8xy0(); // Set Vx = Vy.
         void OP_8xy1(); // Set Vx = Vx OR Vy.
+        void OP_8xy2(); // Set Vx = Vx AND Vy.
+        void OP_8xy3(); // Set Vx = Vx XOR Vy.
+        void OP_8xy4(); // Set Vx = Vx + Vy.
 
 };
 
