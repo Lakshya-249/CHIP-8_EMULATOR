@@ -105,14 +105,14 @@ void Chip8::OP_5xy0() {
     }
 }
 
-void Chip8::OP_6xkk(){
+void Chip8::OP_6xkk() {
     uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     uint8_t kk = opcode & 0x00FFu;
 
     registers[Vx] = kk;
 }
 
-void Chip8::OP_7xkk(){
+void Chip8::OP_7xkk() {
     uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     uint8_t kk = opcode & 0x00FFu;
 
@@ -127,30 +127,82 @@ void Chip8::OP_8xy0() {
 }
 
 
-void Chip8::OP_8xy1(){
+void Chip8::OP_8xy1() {
     uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     uint8_t Vy = (opcode & 0x00F0u) >> 4u;
 
     registers[Vx] |= registers[Vy];
 }
 
-void Chip8::OP_8xy2(){
+void Chip8::OP_8xy2() {
     uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     uint8_t Vy = (opcode & 0x00F0u) >> 4u;
 
     registers[Vx] &= registers[Vy];
 }
 
-void Chip8::OP_8xy3(){
+void Chip8::OP_8xy3() {
     uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     uint8_t Vy = (opcode & 0x00F0u) >> 4u;
 
     registers[Vx] ^= registers[Vy];
 }
 
-void Chip8::OP_8xy4(){
+void Chip8::OP_8xy4() {
     uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     uint8_t Vy = (opcode & 0x00F0u) >> 4u;
 
-    registers[Vx] += registers[Vy];
+    uint16_t sum = registers[Vx] + registers[Vy];
+
+    if(sum > 255) {
+        registers[0xF] = 1;
+    } else {
+        registers[0xF] = 0;
+    }
+
+    registers[Vx] = sum & 0xFFu;
+}
+
+void Chip8::OP_8xy5() {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+    if(registers[Vx] > registers[Vy]) {
+        registers[0xF] = 1;
+    } else {
+        registers[0xF] = 0;
+    }
+
+    registers[Vx] -= registers[Vy];
+}
+
+void Chip8::OP_8xy6() {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+    // Save LSB in VF
+    registers[0xF] = registers[Vx] & 0x1u;
+
+    registers[Vx] >>= 1;
+}
+
+void Chip8::OP_8xy7() {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+   if (registers [Vy] > registers[Vx]) {
+       registers[0xF] = 1;
+   } else {
+       registers[0xF] = 0;
+   }
+
+   registers[Vx] = registers[Vy] - registers[Vx];
+}
+
+void Chip8::OP_8xyE() {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+    // Save MSB in VF
+    registers[0xF] = (registers[Vx] & 0x80u) >> 7u;
+
+    registers[Vx] <<= 1;
 }
