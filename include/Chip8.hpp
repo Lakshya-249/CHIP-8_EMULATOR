@@ -14,24 +14,34 @@ class Chip8 {
         uint8_t sp;
         uint8_t delay_timer;
         uint8_t sound_timer;
-        uint8_t keypad[16];
-        uint32_t display[64 * 32];
         uint16_t opcode;
-
-        const uint8_t VIDEO_WIDTH = 64;
-        const uint8_t VIDEO_HEIGHT = 32;
-
-        const uint16_t FONTSET_START_ADDRESS = 0x50;
 
         std::default_random_engine rand_gen;
         std::uniform_int_distribution<uint8_t> rand_byte;
 
+        typedef void (Chip8::*Chip8Func)() ;
+        Chip8Func table[0xF + 1];
+        Chip8Func table0[0xE + 1];
+        Chip8Func table8[0xE + 1];
+        Chip8Func tableE[0xE + 1];
+        Chip8Func tableF[0x65 + 1];
+
+
     public:
         Chip8();
-        ~Chip8();
+
+        uint8_t keypad[16];
+        uint32_t display[64 * 32];
 
         void LoadROM(const char* filename);
+        void Cycle();
 
+        void Table0();
+        void Table8();
+        void TableE();
+        void TableF();
+
+        void OP_NULL();
         void OP_00E0(); // Clear the display.
         void OP_00EE(); // Return from a subroutine.
         void OP_1nnn(); // Jump to location nnn.
@@ -63,6 +73,9 @@ class Chip8 {
         void OP_Fx18(); // Set sound timer = Vx.
         void OP_Fx1E(); // Set I = I + Vx.
         void OP_Fx29(); // Set I = location of sprite for digit Vx.
+        void OP_Fx33(); // Store BCD representation of Vx in memory locations I, I+1, and I+2.
+        void OP_Fx55(); // Store registers V0 through Vx in memory starting at location I.
+        void OP_Fx65(); // Read registers V0 through Vx from memory starting at location I.
 
 };
 
